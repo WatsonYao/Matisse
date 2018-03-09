@@ -93,7 +93,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                                 case R.id.dracula:
                                     Matisse.from(SampleActivity.this)
                                             .choose(MimeType.ofImage())
-                                            .theme(R.style.Matisse_Dracula)
+                                            .theme(R.style.Matisse_Zhangmen)
                                             .countable(false)
                                             .maxSelectable(9)
                                             .imageEngine(new PicassoEngine())
