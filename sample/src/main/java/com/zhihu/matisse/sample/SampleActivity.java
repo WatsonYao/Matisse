@@ -95,8 +95,8 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                                             .choose(MimeType.ofImage())
                                             .theme(R.style.Matisse_Zhangmen)
                                             .countable(false)
-                                            .maxSelectable(9)
-                                            .imageEngine(new PicassoEngine())
+                                            .maxSelectable(1)
+                                            .imageEngine(new GlideEngine())
                                             .forResult(REQUEST_CODE_CHOOSE);
                                     break;
                             }

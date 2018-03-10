@@ -37,7 +37,7 @@ import com.zhihu.matisse.R;
 public class CheckView extends View {
 
     public static final int UNCHECKED = Integer.MIN_VALUE;
-    private static final float STROKE_WIDTH = 3.0f; // dp
+    private static final float STROKE_WIDTH = 1.0f; // dp
     private static final float SHADOW_WIDTH = 6.0f; // dp
     private static final int SIZE = 48; // dp
     private static final float STROKE_RADIUS = 11.5f; // dp
@@ -48,8 +48,9 @@ public class CheckView extends View {
     private int mCheckedNum;
     private Paint mStrokePaint;
     private Paint mBackgroundPaint;
+    private Paint checkBackgroundPaint;
     private TextPaint mTextPaint;
-    private Paint mShadowPaint;
+    //    private Paint mShadowPaint;
     private Drawable mCheckDrawable;
     private float mDensity;
     private Rect mCheckRect;
@@ -132,9 +133,9 @@ public class CheckView extends View {
         super.onDraw(canvas);
 
         // draw outer and inner shadow
-        initShadowPaint();
-        canvas.drawCircle((float) SIZE * mDensity / 2, (float) SIZE * mDensity / 2,
-                (STROKE_RADIUS + STROKE_WIDTH / 2 + SHADOW_WIDTH) * mDensity, mShadowPaint);
+//        initShadowPaint();
+//        canvas.drawCircle((float) SIZE * mDensity / 2, (float) SIZE * mDensity / 2,
+//                (STROKE_RADIUS + STROKE_WIDTH / 2 + SHADOW_WIDTH) * mDensity, mShadowPaint);
 
         // draw white stroke
         canvas.drawCircle((float) SIZE * mDensity / 2, (float) SIZE * mDensity / 2,
@@ -145,21 +146,29 @@ public class CheckView extends View {
             if (mCheckedNum != UNCHECKED) {
                 initBackgroundPaint();
                 canvas.drawCircle((float) SIZE * mDensity / 2, (float) SIZE * mDensity / 2,
-                        BG_RADIUS * mDensity, mBackgroundPaint);
+                        BG_RADIUS * mDensity, checkBackgroundPaint);
                 initTextPaint();
                 String text = String.valueOf(mCheckedNum);
                 int baseX = (int) (canvas.getWidth() - mTextPaint.measureText(text)) / 2;
                 int baseY = (int) (canvas.getHeight() - mTextPaint.descent() - mTextPaint.ascent()) / 2;
                 canvas.drawText(text, baseX, baseY, mTextPaint);
+            } else {
+                initUnCheckBackgroundPaint();
+                canvas.drawCircle((float) SIZE * mDensity / 2, (float) SIZE * mDensity / 2,
+                        BG_RADIUS * mDensity, mBackgroundPaint);
             }
         } else {
             if (mChecked) {
                 initBackgroundPaint();
                 canvas.drawCircle((float) SIZE * mDensity / 2, (float) SIZE * mDensity / 2,
-                        BG_RADIUS * mDensity, mBackgroundPaint);
+                        BG_RADIUS * mDensity, checkBackgroundPaint);
 
                 mCheckDrawable.setBounds(getCheckRect());
                 mCheckDrawable.draw(canvas);
+            } else {
+                initUnCheckBackgroundPaint();
+                canvas.drawCircle((float) SIZE * mDensity / 2, (float) SIZE * mDensity / 2,
+                        BG_RADIUS * mDensity, mBackgroundPaint);
             }
         }
 
@@ -168,26 +177,26 @@ public class CheckView extends View {
     }
 
     private void initShadowPaint() {
-        if (mShadowPaint == null) {
-            mShadowPaint = new Paint();
-            mShadowPaint.setAntiAlias(true);
-            // all in dp
-            float outerRadius = STROKE_RADIUS + STROKE_WIDTH / 2;
-            float innerRadius = outerRadius - STROKE_WIDTH;
-            float gradientRadius = outerRadius + SHADOW_WIDTH;
-            float stop0 = (innerRadius - SHADOW_WIDTH) / gradientRadius;
-            float stop1 = innerRadius / gradientRadius;
-            float stop2 = outerRadius / gradientRadius;
-            float stop3 = 1.0f;
-            mShadowPaint.setShader(
-                    new RadialGradient((float) SIZE * mDensity / 2,
-                            (float) SIZE * mDensity / 2,
-                            gradientRadius * mDensity,
-                            new int[]{Color.parseColor("#00000000"), Color.parseColor("#0D000000"),
-                                    Color.parseColor("#0D000000"), Color.parseColor("#00000000")},
-                            new float[]{stop0, stop1, stop2, stop3},
-                            Shader.TileMode.CLAMP));
-        }
+//        if (mShadowPaint == null) {
+//            mShadowPaint = new Paint();
+//            mShadowPaint.setAntiAlias(true);
+//            // all in dp
+//            float outerRadius = STROKE_RADIUS + STROKE_WIDTH / 2;
+//            float innerRadius = outerRadius - STROKE_WIDTH;
+//            float gradientRadius = outerRadius + SHADOW_WIDTH;
+//            float stop0 = (innerRadius - SHADOW_WIDTH) / gradientRadius;
+//            float stop1 = innerRadius / gradientRadius;
+//            float stop2 = outerRadius / gradientRadius;
+//            float stop3 = 1.0f;
+//            mShadowPaint.setShader(
+//                    new RadialGradient((float) SIZE * mDensity / 2,
+//                            (float) SIZE * mDensity / 2,
+//                            gradientRadius * mDensity,
+//                            new int[]{Color.parseColor("#00000000"), Color.parseColor("#0D000000"),
+//                                    Color.parseColor("#0D000000"), Color.parseColor("#00000000")},
+//                            new float[]{stop0, stop1, stop2, stop3},
+//                            Shader.TileMode.CLAMP));
+//        }
     }
 
     private void initBackgroundPaint() {
@@ -195,13 +204,40 @@ public class CheckView extends View {
             mBackgroundPaint = new Paint();
             mBackgroundPaint.setAntiAlias(true);
             mBackgroundPaint.setStyle(Paint.Style.FILL);
-            TypedArray ta = getContext().getTheme()
-                    .obtainStyledAttributes(new int[]{R.attr.item_checkCircle_backgroundColor});
+            TypedArray ta = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.item_checkCircle_backgroundColor});
             int defaultColor = ResourcesCompat.getColor(
                     getResources(), R.color.zhihu_item_checkCircle_backgroundColor,
                     getContext().getTheme());
             int color = ta.getColor(0, defaultColor);
             ta.recycle();
+            mBackgroundPaint.setColor(color);
+        }
+        if (checkBackgroundPaint == null) {
+            checkBackgroundPaint = new Paint();
+            checkBackgroundPaint.setAntiAlias(true);
+            checkBackgroundPaint.setStyle(Paint.Style.FILL);
+            TypedArray ta = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.item_checkCircle_backgroundColor});
+            int defaultColor = ResourcesCompat.getColor(
+                    getResources(), R.color.zhihu_item_checkCircle_backgroundColor,
+                    getContext().getTheme());
+            int color = ta.getColor(0, defaultColor);
+            ta.recycle();
+            checkBackgroundPaint.setColor(color);
+        }
+    }
+
+    private void initUnCheckBackgroundPaint() {
+        if (mBackgroundPaint == null) {
+            mBackgroundPaint = new Paint();
+            mBackgroundPaint.setAntiAlias(true);
+            mBackgroundPaint.setStyle(Paint.Style.FILL);
+//            TypedArray ta = getContext().getTheme().obtainStyledAttributes(new int[]{R.attr.item_checkCircle_backgroundColor});
+//            int defaultColor = ResourcesCompat.getColor(
+//                    getResources(), R.color.zhangmen_preview_bottom_toolbar_apply_text_disable,
+//                    getContext().getTheme());
+//            int color = ta.getColor(0, defaultColor);
+//            ta.recycle();
+            int color = getResources().getColor(R.color.zhangmen_item_checkCircle_unCheck);
             mBackgroundPaint.setColor(color);
         }
     }
